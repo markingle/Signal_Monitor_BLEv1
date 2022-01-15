@@ -211,19 +211,40 @@ void loop() {
         //AN_Pot1_Raw = 0;
         if ((AN_Pot1_Filtered >= 100) && (voltageDetected == false)) {
           digitalWrite(VOLTAGE_DETECTED, HIGH);
+          char txString[4];
+          dtostrf(AN_Pot1_Filtered, 1, 2, txString);
+          pCharacteristicC->setValue(txString);
+          pCharacteristicC->setValue(txString);
+          pCharacteristicC->notify();
           delay(100);
           int value = 1;
+          Serial.print("Active   ");
+          Serial.print(AN_Pot1_Raw);        // Print Raw Reading
+          Serial.print(',');                // Comma Separator
+          Serial.println(AN_Pot1_Filtered); // Print Filtered Output
           pCharacteristicA->setValue((uint8_t*)&value, 4);
           pCharacteristicA->notify();
           voltageDetected = true;
+          
         } else if ((AN_Pot1_Filtered <= 100) && (voltageDetected == true)) {
             digitalWrite(VOLTAGE_DETECTED, LOW);
+            char txString[4];
+            dtostrf(AN_Pot1_Filtered, 1, 2, txString);
+            pCharacteristicC->setValue(txString);
+            pCharacteristicC->setValue(txString);
+            pCharacteristicC->notify();
             delay(100);                       // wait for a milli
             int value = 0;
+            Serial.print("Not Active   ");
+            Serial.print(AN_Pot1_Raw);        // Print Raw Reading
+            Serial.print(',');                // Comma Separator
+            Serial.println(AN_Pot1_Filtered); // Print Filtered Output
             pCharacteristicA->setValue((uint8_t*)&value, 4);
             pCharacteristicA->notify();
             voltageDetected = false;
         }
+        //char txString[5];
+        //dtostrf(AN_Pot1_Filtered,1,2,txString);
     }
     // disconnecting
     if (!deviceConnected && oldDeviceConnected) {
